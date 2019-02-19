@@ -1,0 +1,33 @@
+{
+  "name": "Logistics",
+  "base": "Model",
+  "idInjection": true,
+  "strict": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "_id": {
+      "type": "string",
+      "id": true,
+      "required": true
+    },
+    "trackingId": {
+      "type": "string",
+      "required": true
+    },
+    "freight": {
+      "type": "string",
+      "required": false
+    },
+    "logisticsCompany": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {},
+  "mixins": {}
+}

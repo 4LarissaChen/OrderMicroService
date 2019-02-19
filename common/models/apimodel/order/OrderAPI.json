@@ -1,0 +1,26 @@
+{
+    "name": "OrderAPI",
+    "base": "Model",
+    "idInjection": true,
+    "strict": true,
+    "options": {
+      "validateUpsert": true
+    },
+    "properties": {
+      "_id": {
+        "type": "string",
+        "id": false,
+        "required": false
+      }
+    },
+    "validations": [],
+    "relations": {
+    },
+    "acls": [
+  
+    ],
+    "methods": {},
+    "mixins": {
+    }
+  }
+  

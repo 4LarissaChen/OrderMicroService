@@ -1,0 +1,24 @@
+{
+	"name": "AttachLogisticsRequest",
+	"base": "Model",
+	"idInjection": false,
+	"options": {
+		"validateUpsert": true
+	},
+	"properties": {
+		"id": false,
+		"trackingId": {
+			"type": "string"
+		},
+		"freight": {
+			"type": "string"
+		},
+		"logisticsCompany": {
+			"type": "string"
+		}
+	},
+	"validations": [],
+	"relations": {},
+	"acls": [],
+	"methods": {}
+}

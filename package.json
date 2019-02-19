@@ -1,0 +1,56 @@
+{
+  "name": "order-microservice",
+  "version": "1.0.0",
+  "main": "server/server.js",
+  "engines": {
+    "node": ">=4"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "start": "node .",
+    "build:sdk": "./node_modules/.bin/lb-sdk server/server ../ca-web/src/app/shared/sdk",
+    "test": "mocha server/test/facadeAPITest/*test.js server/test/facadeAPITest/**/*test.js"
+  },
+  "dependencies": {
+    "@mean-expert/loopback-component-realtime": "^1.0.0-rc.4",
+    "@mean-expert/loopback-sdk-builder": "^2.1.0-rc.9",
+    "compression": "^1.6.1",
+    "cors": "^2.5.1",
+    "helmet": "^2.0.0",
+    "winston": "^2.3.1",
+    "loopback": "^3.0.0",
+    "loopback-boot": "^2.7.1",
+    "loopback-component-explorer": "^4.0.0",
+    "loopback-connector-mongodb": "^1.18.1",
+    "loopback-connector-neo4j-graph": "^1.0.7",
+    "loopback-connector-swagger": "^3.2.0",
+    "loopback-context": "3.3.0",
+    "mocha": "^3.2.0",
+    "chai": "^3.5.0",
+    "serve-favicon": "^2.0.1",
+    "strong-error-handler": "^2.0.0",
+    "express-session": "1.11.3",
+    "cookie-parser": "1.4.0",
+    "request": "^2.81.0",
+    "moment": "^2.18.1",
+    "loopback-component-remote-auth": "^0.1.0",
+    "shortid": "2.2.8",
+    "neo4j-driver": "1.5.1",
+    "xml2js": "0.4.17",
+    "jsdom": "^11.5.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.17.1",
+    "eslint-config-loopback": "^8.0.0",
+    "nsp": "^2.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.ibm.com:CTOTools/CognitiveArchitect.git"
+  },
+  "license": "",
+  "description": "This is a tool for IBM Architects/Technique Sales to find & compose Architecture",
+  "surveyLink": "http://www.surveygizmo.com/s3/3553765/Cognitive-Architect-Survey",
+  "communityLink": "https://apps.na.collabserv.com/wikis/home?lang=en-us#!/wiki/Wb12ce21f626a_40bb_8186_a9781ec83663/page/Cognitive%20Architect",
+  "releaseNotesLink": "https://apps.na.collabserv.com/wikis/home?lang=en-us#!/wiki/Wb12ce21f626a_40bb_8186_a9781ec83663/page/Cognitive%20Architect%20Release%20Notes%20%26%20Plans"
+}

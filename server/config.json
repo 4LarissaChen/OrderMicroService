@@ -1,0 +1,30 @@
+{
+  "restApiRoot": "/api",
+  "host": "0.0.0.0",
+  "port": 4002,
+  "remoting": {
+    "context": false,
+    "rest": {
+      "handleErrors": false,
+      "normalizeHttpPath": false,
+      "xml": false
+    },
+    "json": {
+      "strict": false,
+      "limit": "10mb"
+    },
+    "urlencoded": {
+      "extended": true,
+      "limit": "10mb"
+    },
+    "cors": false,
+    "types": {
+      "warnOnUnknownType": false
+    }
+  },
+  "neo4j": {
+    "url": "bolt://47.102.96.102",
+    "username": "neo4j",
+    "password": "passw0rd"
+  }
+}

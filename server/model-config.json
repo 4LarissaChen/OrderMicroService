@@ -1,0 +1,66 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models/datamodel",
+      "./models",
+      "./models/response/",
+      "../common/models/apimodel/order",
+      "../common/models/apimodel/order/apiSpec/common/response",
+      "../common/models/apimodel/order/apiSpec/createOrder/response",
+      "../common/models/apimodel/order/apiSpec/findOrderById/response",
+      "../common/models/apimodel/order/apiSpec/attachLogistics/request"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins",
+      "../common/mixins",
+      "../common/mixins/dedicatedValidation",
+      "./mixins"
+    ]
+  },
+
+  "OrderAPI": {
+    "dataSource": "db",
+    "public": true
+  },
+
+  "Logistics": {
+    "dataSource": "db",
+    "public": true
+  },
+  "ProductSeries": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Product": {
+    "dataSource": "db",
+    "public": true
+  },
+  "OrderAsset": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Order": {
+    "dataSource": "db",
+    "public": true
+  },
+
+  "AttachLogisticsRequest": {
+    "dataSource": "db",
+    "public": true
+  },
+  "FindOrderByIdResponse": {
+    "dataSource": "db",
+    "public": true
+  },
+  "IsSuccessResponse": {
+    "dataSource": "db",
+    "public": true
+  },
+  "CreateOrderResponse": {
+    "dataSource": "db",
+    "public": true
+  }
+}

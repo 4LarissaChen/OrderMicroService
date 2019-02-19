@@ -1,0 +1,25 @@
+{
+  "name": "FindOrderByIdResponse",
+  "base": "Model",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": false,
+    "order": {
+      "type": "string",
+      "required": true
+    },
+    "Logistics": {
+      "type": "Logistics"
+    },
+    "productList": {
+      "type": ["Product"]
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
