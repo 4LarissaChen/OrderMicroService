@@ -8,6 +8,7 @@
       "./models/response/",
       "../common/models/apimodel/order",
       "../common/models/apimodel/order/apiSpec/common/response",
+      "../common/models/apimodel/order/apiSpec/createOrder/request",
       "../common/models/apimodel/order/apiSpec/createOrder/response",
       "../common/models/apimodel/order/apiSpec/findOrderById/response",
       "../common/models/apimodel/order/apiSpec/attachLogistics/request"
@@ -47,6 +48,10 @@
     "public": true
   },
 
+  "CreateOrderRequest": {
+    "dataSource": "db",
+    "public": true
+  },
   "AttachLogisticsRequest": {
     "dataSource": "db",
     "public": true

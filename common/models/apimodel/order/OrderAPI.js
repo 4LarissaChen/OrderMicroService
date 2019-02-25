@@ -32,26 +32,25 @@ module.exports = function (OrderAPI) {
 		return session.readTransaction(transaction => {
 			let orderService = new OrderService(transaction);
 			return orderService.findOrderById(orderId);
-		}).catch(err => err).finally(() => session.close());
+		}).finally(() => session.close());
 	}
 
 	OrderAPI.remoteMethod('createOrder', {
 		description: "Find Order by order id",
-		accepts: [{ arg: 'customerId', type: 'string', required: true, description: "customerId id", http: { source: 'path' } },
-		{ arg: 'productList', type: ['string'], required: true, description: "product list", http: { source: 'body' } },
-		{ arg: 'freight', type: 'string', required: true, description: "freight", http: { source: 'body' } }],
+		accepts: { arg: 'createOrderData', type: 'CreateOrderRequest', required: true, description: "product list", http: { source: 'body' } },
 		returns: { arg: 'resp', type: 'CreateOrderResponse', description: 'Order itself information', root: true },
-		http: { path: '/Orders/createOrder/:customerId', verb: 'put', status: 200, errorStatus: [500] }
+		http: { path: '/Orders/createOrder', verb: 'put', status: 200, errorStatus: [500] }
 	});
-	OrderAPI.createOrder = function (customerId, productList, freight) {
-		let transaction = neo4jUtils.getTransaction();
+	OrderAPI.createOrder = function (createOrderData) {
+		let session = neo4jUtils.getSession();
+		let transaction = session.beginTransaction();
 		let orderService = new OrderService(transaction);
 		let order = {
 			_id: apiUtils.generateShortId("order"),
-			customerId: customerId,
+			customerId: createOrderData.customerId,
 			createDate: moment().utc().format()
 		};
-		return orderService.createOrderWithProductsAndLogistics(order, productList).then(() => {
+		return orderService.createOrderWithProductsAndLogistics(order, createOrderData.productList, createOrderData.freight).then(() => {
 			return transaction.commit();
 		}).then(() => {
 			return { orderId: order._id };
@@ -71,7 +70,8 @@ module.exports = function (OrderAPI) {
 	});
 
 	OrderAPI.loadStaticData = function (modelName) {
-		let transaction = neo4jUtils.getTransaction();
+		let session = neo4jUtils.getSession();
+		let transaction = session.beginTransaction();
 		let dataSet = JSON.parse(fs.readFileSync(global.appRoot + 'common/models/datamodel/staticdata/' + modelName + '.json'));
 		let orderService = new OrderService(transaction);
 		return Promise.map(dataSet, data => {
@@ -102,18 +102,18 @@ module.exports = function (OrderAPI) {
 
 	OrderAPI.remoteMethod('attachLogistics', {
 		description: "Initialize graph database with static data.",
-		accepts: [{ arg: 'logisticsId', type: 'string', required: true, description: "Logistics id", http: { source: 'path' } },
-		{ arg: 'logistics', type: 'AttachLogisticsRequest', required: true, description: "logistics", http: { source: 'body' } }],
+		accepts: { arg: 'logistics', type: 'AttachLogisticsRequest', required: true, description: "logistics", http: { source: 'body' } },
 		returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: 'is success or not', root: true },
-		http: { path: '/Orders/attachLogistics/:logisticsId', verb: 'put', status: 200, errorStatus: [500] }
+		http: { path: '/Orders/attachLogistics', verb: 'put', status: 200, errorStatus: [500] }
 	});
 
-	OrderAPI.attachLogistics = function (logisticsId, logistics) {
-		let transaction = neo4jUtils.getTransaction();
-		let orderService = new OrderService();
-		return orderService.checkLogisticsExists(logisticsId).then(result => {
-			if(result.length == 0) throw apiUtils.build404Error(apiConstants.ERROR_MESSAGE_NO_MODEL_FOUND, "Logistics");
-			return orderService.attachLogistics(logisticsId, logistics);
+	OrderAPI.attachLogistics = function (logistics) {
+		let session = neo4jUtils.getSession();
+		let transaction = session.beginTransaction();
+		let orderService = new OrderService(transaction);
+		return orderService.checkLogisticsExists(logistics.logisticsId).then(result => {
+			if (result.length == 0) throw apiUtils.build404Error(apiConstants.ERROR_MESSAGE_NO_MODEL_FOUND, "Logistics");
+			return orderService.attachLogistics(logistics);
 		}).then(() => {
 			return transaction.commit();
 		}).then(() => { return { isSuccess: true } }).catch(err => {
@@ -123,4 +123,32 @@ module.exports = function (OrderAPI) {
 			session.close();
 		})
 	}
+
+	OrderAPI.remoteMethod('getProductSeries', {
+		description: "Get product series.",
+		returns: { arg: 'resp', type: ['ProductSeries'], description: 'Product series.', root: true },
+		http: { path: '/Orders/getProductSeries', verb: 'get', status: 200, errorStatus: [500] }
+	});
+	OrderAPI.getProductSeries = function () {
+		let session = neo4jUtils.getSession();
+		return session.readTransaction(transaction => {
+			let orderService = new OrderService(transaction);
+			return orderService.getProductSeries();
+		}).finally(() => session.close());
+	}
+
+	OrderAPI.remoteMethod('getProductsBySeries', {
+		description: "Get products by product series Id.",
+		accepts: { arg: 'seriesId', type: 'string', required: true, description: "product series id", http: { source: 'path' } },
+		returns: { arg: 'resp', type: ['Product'], description: 'is success or not', root: true },
+		http: { path: '/Orders/seriesId/:seriesId/getProductsBySeries', verb: 'get', status: 200, errorStatus: [500] }
+	});
+	OrderAPI.getProductsBySeries = function (seriesId) {
+		let session = neo4jUtils.getSession();
+		return session.readTransaction(transaction => {
+			let orderService = new OrderService(transaction);
+			return orderService.getProductsBySeries(seriesId);
+		}).finally(() => session.close());
+	}
 }
+

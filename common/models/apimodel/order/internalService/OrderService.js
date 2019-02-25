@@ -37,14 +37,14 @@ OrderService.prototype.createOrderWithProductsAndLogistics = function (order, pr
 		let createOrderAssetCypher = "CREATE (n:OrderAsset{_id: $_id}) WITH n MATCH (o:Order{_id: $orderId}) MATCH(p:Product{_id: $product}) " +
 			"MERGE (o)-[:INCLUDEORDERASSET]->(n)-[:INCLUDEPRODUCT]->(p)"
 		return Promise.map(productList, product => {
-			return this.transaction.cun(createOrderAssetCypher, { _id: apiUtils.generateShortId('orderasset'), orderId: order._id, product: product });
+			return this.transaction.run(createOrderAssetCypher, { _id: apiUtils.generateShortId('orderasset'), orderId: order._id, product: product });
 		})
 	})
 };
 
 OrderService.prototype.createLogistics = function (orderId, freight) {
 	let _id = apiUtils.generateShortId("Logistics");
-	let cypher = "MATCH (n:Order{_id: $orderId}) CREATE (m:Logistics{_id: $_id} SET m.freight = $freight MERGE (n)-[:INCLUDELOGISTICS]->(m)";
+	let cypher = "MATCH (n:Order{_id: $orderId}) CREATE (m:Logistics{_id: $_id}) SET m.freight = $freight MERGE (n)-[:INCLUDELOGISTICS]->(m)";
 	return this.transaction.run(cypher, { orderId: orderId, _id: _id, freight: freight });
 }
 
@@ -56,19 +56,20 @@ OrderService.prototype.createOrder = function (order) {
 OrderService.prototype.findOrderById = function (orderId) {
 	let cypher = "MATCH (n:Order{_id: $id})-->(m:OrderAsset)-->(p:Product) WITH n, COLLECT(DISTINCT p) AS productList " +
 		"MATCH (n)-->(l:Logistics) RETURN n AS order, l AS logistics, productList";
-	return this.transaction(cypher, { id: orderId }).then(neo4jResults => {
-		return {
-			order: neo4jResults.records[0].get("order"),
-			logistics: neo4jResults.records[0].get("logistics"),
-			productList: neo4jResults.records[0].get("productList")
+	return this.transaction.run(cypher, { id: orderId }).then(neo4jResults => {
+		let resp = {
+			order: neo4jResults.records[0].get("order").properties,
+			logistics: neo4jResults.records[0].get("logistics").properties,
+			productList: neo4jResults.records[0].get("productList").map(r => r.properties)
 		}
+		return resp;
 	})
 }
 
-OrderService.prototype.attachLogistics = function (logisticsId, logistics) {
-	let cypher = "MATCH (n:Logistics{_id: $logisticsId}) SET n.trackingId = $trackingId SET n.logisticsCompany = logisticsCompany";
+OrderService.prototype.attachLogistics = function (logistics) {
+	let cypher = "MATCH (n:Logistics{_id: $logisticsId}) SET n.trackingId = $trackingId SET n.logisticsCompany = $logisticsCompany";
 	return this.transaction.run(cypher, {
-		_id: logisticsId,
+		logisticsId: logistics.logisticsId,
 		trackingId: logistics.trackingId,
 		logisticsCompany: logistics.logisticsCompany
 	});
@@ -85,5 +86,19 @@ OrderService.prototype.checkLogisticsExists = function (logisticsId) {
 	let cypher = "MATCH (n:Logistics{_id: $logisticsId}) RETURN n";
 	return this.transaction.run(cypher, { logisticsId: logisticsId }).then(neo4jResults => {
 		return neo4jResults.records;
+	})
+}
+
+OrderService.prototype.getProductSeries = function (logisticsId) {
+	let cypher = "MATCH (n:ProductSeries) RETURN n AS series";
+	return this.transaction.run(cypher, {}).then(neo4jResults => {
+		return neo4jResults.records.map(r => r.get('series').properties);
+	})
+}
+
+OrderService.prototype.getProductsBySeries = function (seriesId){
+	let cypher = "MATCH (n:ProductSeries{_id: $_id})-[:INCLUDEPRODUCT]->(m:Product) RETURN m AS product";
+	return this.transaction.run(cypher, {_id: seriesId}).then(neo4jResults => {
+		return neo4jResults.records.map(r => r.get('product').properties);
 	})
 }

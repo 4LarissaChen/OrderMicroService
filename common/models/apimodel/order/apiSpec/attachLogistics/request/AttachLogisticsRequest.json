@@ -7,11 +7,13 @@
 	},
 	"properties": {
 		"id": false,
-		"trackingId": {
-			"type": "string"
+		"logisticsId": {
+			"type": "string",
+			"required": true
 		},
-		"freight": {
-			"type": "string"
+		"trackingId": {
+			"type": "string",
+			"required": true
 		},
 		"logisticsCompany": {
 			"type": "string"
