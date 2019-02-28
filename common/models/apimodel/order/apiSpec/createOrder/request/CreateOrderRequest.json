@@ -7,8 +7,25 @@
   },
   "properties": {
     "id": false,
-    "orderId": {
-      "type": "string"
+    "customerId": {
+      "type": "string",
+      "required": true
+    },
+    "storeId": {
+      "type": "string",
+      "required": true
+    },
+    "productList": {
+      "type": ["string"],
+      "required": true
+    },
+    "freight": {
+      "type": "string",
+      "required": true
+    },
+    "totalPrice": {
+      "type": "string",
+      "required": true
     }
   },
   "validations": [],

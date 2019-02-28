@@ -25,7 +25,7 @@ module.exports = function (OrderAPI) {
 		description: "Find Order by order id",
 		accepts: { arg: 'orderId', type: 'string', required: true, description: "order id", http: { source: 'path' } },
 		returns: { arg: 'resp', type: 'FindOrderByIdResponse', description: 'Order itself information', root: true },
-		http: { path: '/Orders/findOrderById/:orderId', verb: 'get', status: 200, errorStatus: [500] }
+		http: { path: '/orders/findOrderById/:orderId', verb: 'get', status: 200, errorStatus: [500] }
 	});
 	OrderAPI.findOrderById = function (orderId) {
 		let session = neo4jUtils.getSession();
@@ -39,7 +39,7 @@ module.exports = function (OrderAPI) {
 		description: "Find Order by order id",
 		accepts: { arg: 'createOrderData', type: 'CreateOrderRequest', required: true, description: "product list", http: { source: 'body' } },
 		returns: { arg: 'resp', type: 'CreateOrderResponse', description: 'Order itself information', root: true },
-		http: { path: '/Orders/createOrder', verb: 'put', status: 200, errorStatus: [500] }
+		http: { path: '/orders/createOrder', verb: 'put', status: 200, errorStatus: [500] }
 	});
 	OrderAPI.createOrder = function (createOrderData) {
 		let session = neo4jUtils.getSession();
@@ -50,7 +50,9 @@ module.exports = function (OrderAPI) {
 			customerId: createOrderData.customerId,
 			createDate: moment().utc().format()
 		};
-		return orderService.createOrderWithProductsAndLogistics(order, createOrderData.productList, createOrderData.freight).then(() => {
+		return orderService.createOrderWithProductsAndLogistics(order, createOrderData.productList, createOrderData.freight).then(() => { 
+			return orderService.attachOrderToStore(order._id, createOrderData.storeId);	
+		}).then(() => {
 			return transaction.commit();
 		}).then(() => {
 			return { orderId: order._id };
@@ -66,7 +68,7 @@ module.exports = function (OrderAPI) {
 		description: "Initialize graph database with static data.",
 		accepts: { arg: 'modelName', type: 'string', required: true, description: "model name", http: { source: 'path' } },
 		returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: 'is success or not', root: true },
-		http: { path: '/Orders/loadStaticData/:modelName', verb: 'get', status: 200, errorStatus: [500] }
+		http: { path: '/orders/loadStaticData/:modelName', verb: 'get', status: 200, errorStatus: [500] }
 	});
 
 	OrderAPI.loadStaticData = function (modelName) {
@@ -75,7 +77,7 @@ module.exports = function (OrderAPI) {
 		let dataSet = JSON.parse(fs.readFileSync(global.appRoot + 'common/models/datamodel/staticdata/' + modelName + '.json'));
 		let orderService = new OrderService(transaction);
 		return Promise.map(dataSet, data => {
-			data._id = apiUtils.generateShortId(modelName);
+			data._id = data._id ? data._id : apiUtils.generateShortId(modelName);
 			return orderService.createStaticData(modelName, data);
 		}).then(() => {
 			let promiseArray = [];
@@ -104,7 +106,7 @@ module.exports = function (OrderAPI) {
 		description: "Initialize graph database with static data.",
 		accepts: { arg: 'logistics', type: 'AttachLogisticsRequest', required: true, description: "logistics", http: { source: 'body' } },
 		returns: { arg: 'isSuccess', type: 'IsSuccessResponse', description: 'is success or not', root: true },
-		http: { path: '/Orders/attachLogistics', verb: 'put', status: 200, errorStatus: [500] }
+		http: { path: '/orders/attachLogistics', verb: 'put', status: 200, errorStatus: [500] }
 	});
 
 	OrderAPI.attachLogistics = function (logistics) {
@@ -127,7 +129,7 @@ module.exports = function (OrderAPI) {
 	OrderAPI.remoteMethod('getProductSeries', {
 		description: "Get product series.",
 		returns: { arg: 'resp', type: ['ProductSeries'], description: 'Product series.', root: true },
-		http: { path: '/Orders/getProductSeries', verb: 'get', status: 200, errorStatus: [500] }
+		http: { path: '/orders/getProductSeries', verb: 'get', status: 200, errorStatus: [500] }
 	});
 	OrderAPI.getProductSeries = function () {
 		let session = neo4jUtils.getSession();
@@ -141,7 +143,7 @@ module.exports = function (OrderAPI) {
 		description: "Get products by product series Id.",
 		accepts: { arg: 'seriesId', type: 'string', required: true, description: "product series id", http: { source: 'path' } },
 		returns: { arg: 'resp', type: ['Product'], description: 'is success or not', root: true },
-		http: { path: '/Orders/seriesId/:seriesId/getProductsBySeries', verb: 'get', status: 200, errorStatus: [500] }
+		http: { path: '/orders/seriesId/:seriesId/getProductsBySeries', verb: 'get', status: 200, errorStatus: [500] }
 	});
 	OrderAPI.getProductsBySeries = function (seriesId) {
 		let session = neo4jUtils.getSession();
