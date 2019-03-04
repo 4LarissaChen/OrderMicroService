@@ -47,7 +47,7 @@ module.exports = function (OrderAPI) {
 		let orderService = new OrderService(transaction);
 		let order = {
 			_id: apiUtils.generateShortId("order"),
-			customerId: createOrderData.customerId,
+			userId: createOrderData.userId,
 			createDate: moment().utc().format()
 		};
 		return orderService.createOrderWithProductsAndLogistics(order, createOrderData.productList, createOrderData.freight).then(() => { 
