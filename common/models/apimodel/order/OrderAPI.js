@@ -32,7 +32,7 @@ module.exports = function (OrderAPI) {
 		return session.readTransaction(transaction => {
 			let orderService = new OrderService(transaction);
 			return orderService.findOrderById(orderId);
-		}).finally(() => session.close());
+		}).finally(() => session.close()).catch(err => err);
 	}
 
 	OrderAPI.remoteMethod('createOrder', {

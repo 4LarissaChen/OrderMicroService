@@ -7,11 +7,14 @@
       "./models",
       "./models/response/",
       "../common/models/apimodel/order",
+      "../common/models/apimodel/store",
+      "../common/models/apimodel/florist",
       "../common/models/apimodel/order/apiSpec/common/response",
       "../common/models/apimodel/order/apiSpec/createOrder/request",
       "../common/models/apimodel/order/apiSpec/createOrder/response",
       "../common/models/apimodel/order/apiSpec/findOrderById/response",
-      "../common/models/apimodel/order/apiSpec/attachLogistics/request"
+      "../common/models/apimodel/order/apiSpec/attachLogistics/request",
+      "../common/models/apimodel/florist/apiSpec/assignJobToFlroist/request"
     ],
     "mixins": [
       "loopback/common/mixins",
@@ -23,6 +26,14 @@
   },
 
   "OrderAPI": {
+    "dataSource": "db",
+    "public": true
+  },
+  "StoreAPI": {
+    "dataSource": "db",
+    "public": true
+  },
+  "FloristAPI": {
     "dataSource": "db",
     "public": true
   },
@@ -53,6 +64,10 @@
     "public": true
   },
   "AttachLogisticsRequest": {
+    "dataSource": "db",
+    "public": true
+  },
+  "AssignJobToFlroistRequest": {
     "dataSource": "db",
     "public": true
   },

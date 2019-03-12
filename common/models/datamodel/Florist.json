@@ -1,5 +1,5 @@
 {
-  "name": "OrderAsset",
+  "name": "Florist",
   "base": "Model",
   "idInjection": true,
   "strict": false,
@@ -12,21 +12,12 @@
       "id": true,
       "required": true
     },
-    "status": {
+    "userId": {
       "type": "string",
       "required": true
     },
-    "assignDate": {
-      "type": "string",
-      "required": false
-    },
-    "startDate": {
-      "type": "string",
-      "required": false
-    },
-    "completeDate": {
-      "type": "string",
-      "required": false
+    "level": {
+      "type": "string"
     }
   },
   "validations": [],

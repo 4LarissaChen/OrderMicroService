@@ -1,0 +1,26 @@
+{
+	"name": "AssignJobToFlroistRequest",
+	"base": "Model",
+	"idInjection": false,
+	"options": {
+		"validateUpsert": true
+	},
+	"properties": {
+		"id": false,
+		"orderId": {
+			"type": "string",
+			"required": true
+		},
+		"floristId": {
+			"type": "string",
+			"required": true
+		},
+		"productMapping": {
+			"type": "object"
+		}
+	},
+	"validations": [],
+	"relations": {},
+	"acls": [],
+	"methods": {}
+}
