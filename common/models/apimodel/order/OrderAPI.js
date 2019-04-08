@@ -50,8 +50,8 @@ module.exports = function (OrderAPI) {
 			userId: createOrderData.userId,
 			createDate: moment().utc().format()
 		};
-		return orderService.createOrderWithProductsAndLogistics(order, createOrderData.productList, createOrderData.freight).then(() => { 
-			return orderService.attachOrderToStore(order._id, createOrderData.storeId);	
+		return orderService.createOrderWithProductsAndLogistics(order, createOrderData.productList, createOrderData.freight).then(() => {
+			return orderService.attachOrderToStore(order._id, createOrderData.storeId);
 		}).then(() => {
 			return transaction.commit();
 		}).then(() => {
@@ -150,6 +150,20 @@ module.exports = function (OrderAPI) {
 		return session.readTransaction(transaction => {
 			let orderService = new OrderService(transaction);
 			return orderService.getProductsBySeries(seriesId);
+		}).finally(() => session.close());
+	}
+
+	OrderAPI.remoteMethod('getProductsById', {
+		description: "Get products by product Id.",
+		accepts: { arg: 'productId', type: 'string', required: true, description: "product id", http: { source: 'path' } },
+		returns: { arg: 'resp', type: ['Product'], description: 'product detail', root: true },
+		http: { path: '/orders/product/:productId/getProductsByIds', verb: 'get', status: 200, errorStatus: [500] }
+	});
+	OrderAPI.getProductsById = function (productId) {
+		let session = neo4jUtils.getSession();
+		return session.readTransaction(transaction => {
+			let orderService = new OrderService(transaction);
+			return orderService.getProductsById(productId);
 		}).finally(() => session.close());
 	}
 }

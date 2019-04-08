@@ -107,3 +107,10 @@ OrderService.prototype.getProductsBySeries = function (seriesId) {
 		return neo4jResults.records.map(r => r.get('product').properties);
 	})
 }
+
+OrderService.prototype.getProductsById = function (productId) {
+	let cypher = "MATCH (n:Product{_id: $_id}) RETURN n AS product";
+	return this.transaction.run(cypher, { _id: productId }).then(neo4jResults => {
+		return neo4jResults.records[0].get('product').properties;
+	})
+}
