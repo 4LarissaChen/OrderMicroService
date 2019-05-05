@@ -36,6 +36,23 @@ module.exports = function (FloristAPI) {
 		}).finally(() => session.close());
 	}
 
+	FloristAPI.remoteMethod('getFlorist', {
+		description: "Get florist.",
+		accepts: [{ arg: 'floristId', type: 'string', required: true, description: "Florist Id.", http: { source: 'query' } },
+		{ arg: 'storeId', type: 'string', required: true, description: "Store Id.", http: { source: 'query' } }],
+		returns: { arg: 'resp', type: 'IsSuccessResponse', description: '', root: true },
+		http: { path: '/florist/getFlorist', verb: 'get', status: 200, errorStatus: [500] }
+	});
+	FloristAPI.getFlorist = function (floristId, storeId) {
+		let session = neo4j.getSession();
+		return session.readTransaction(transaction => {
+			let floristService = new FloristService(transaction);
+			return floristService.getFlorist(floristId, storeId);
+		}).catch(err => {
+			throw err;
+		}).finally(() => session.close());
+	}
+
 	FloristAPI.remoteMethod('startJob', {
 		description: "Create florist by userId.",
 		accepts: [{ arg: 'orderId', type: 'string', required: true, description: "Order Id.", http: { source: 'path' } },

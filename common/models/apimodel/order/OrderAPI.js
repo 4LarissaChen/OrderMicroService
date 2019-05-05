@@ -51,7 +51,11 @@ module.exports = function (OrderAPI) {
 			createDate: moment().utc().format()
 		};
 		return orderService.createOrderWithProductsAndLogistics(order, createOrderData.productList, createOrderData.freight).then(() => {
-			return orderService.attachOrderToStore(order._id, createOrderData.storeId);
+			if (createOrderData.freight === '0')
+				return orderService.attachOrderToStore(order._id, createOrderData.storeId);
+			else if (createOrderData.floristId || createOrderData.floristId != "")
+				return orderService.attachOrderToStoreThroughFlorist(order._id, createOrderData.floristId);
+			return;
 		}).then(() => {
 			return transaction.commit();
 		}).then(() => {

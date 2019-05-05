@@ -43,8 +43,14 @@ OrderService.prototype.createOrderWithProductsAndLogistics = function (order, pr
 };
 
 OrderService.prototype.attachOrderToStore = function (orderId, storeId) {
-	let cypher = "MATCH (n:Order{_id: $orderId}) MATCH (m:Store{_id: $storeId}) MERGE (n)-[:BELONGTO]->(m)";
+	let cypher = "MATCH (n:Order{_id: $orderId}) MATCH (m:Store{_id: $storeId}) MERGE (n)<-[:INCLUDEORDER]-(m)";
 	return this.transaction.run(cypher, { orderId: orderId, storeId: storeId });
+}
+
+OrderService.prototype.attachOrderToStoreThroughFlorist = function (orderId, floristId) {
+	let cypher = "MATCH (n:Order{_id: $orderId})-->(oa:OrderAsset) MATCH (f:Florist{_id: $floristId})<--(s:Store) WITH n, f, s, COLLECT(DISTINCT oa) AS oas Merge (n)<-[:INCLUDEORDER]-(s) " +
+		"WITH * FOREACH(oa IN oas | MERGE (oa)-[:PRODUCTBY]->(f))";
+	return this.transaction.run(cypher, { orderId: orderId, floristId: floristId });
 }
 
 OrderService.prototype.createLogistics = function (orderId, freight) {

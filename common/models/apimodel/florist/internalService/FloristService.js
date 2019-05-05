@@ -23,6 +23,28 @@ FloristService.prototype.createFlorist = function (florist) {
   return this.transaction.run(cypher, { _id: florist._id, props: florist });
 }
 
+FloristService.prototype.getFlorist = function (floristId, storeId) {
+  let cypher;
+  if (floristId && floristId != "")
+    cypher = "MATCH (f:Florist{_id: $floristId}) RETURN f";
+  else {
+    cypher = nodeUtil.format("MATCH (s:Store%s)-->(f:Florist) RETURN s, COLLECT (DISTINCT f._id) AS f", (storeId && storeId != "" ? "{_id: $storeId}" : ""));
+  }
+  return this.transaction.run(cypher, { floristId: floristId, storeId: storeId }).then(neo4jResult => {
+    if (floristId && floristId != "")
+      return neo4jResult.records[0].get("f").properties;
+    else {
+      let resp = [];
+      neo4jResult.records.forEach(r => {
+        let store = r.get("s").properties;
+        store.includeFlorists = r.get("f");
+        resp.push(store);
+      });
+      return resp;
+    }
+  })
+}
+
 FloristService.prototype.changeJobStatus = function (orderId, productId, operation) {
   let dateParam = operation.toLowerCase() + "Date";
   let date = moment().local().format('YYYY-MM-DD HH:mm:ss');

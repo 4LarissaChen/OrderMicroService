@@ -26,6 +26,10 @@
     "totalPrice": {
       "type": "string",
       "required": true
+    },
+    "expectedDeliverDate": {
+      "type": "string",
+      "required": true
     }
   },
   "validations": [],

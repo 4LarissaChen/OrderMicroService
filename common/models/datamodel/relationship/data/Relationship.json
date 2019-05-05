@@ -1,0 +1,12 @@
+[
+  {
+    "fromLabel": "Store",
+    "toLabel": "Florist",
+    "type": "INCLUDEFLORIST"
+  },
+  {
+    "fromLabel": "Store",
+    "toLabel": "Order",
+    "type": "INCLUDEORDER"
+  }
+]
